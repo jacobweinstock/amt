@@ -105,7 +105,7 @@ func (c *challenge) parseChallenge(input string) error {
 		return fmt.Errorf("challenge is bad, missing prefix: %s", input)
 	}
 	s = strings.Trim(s[7:], ws)
-	sl := strings.Split(s, ",")
+	sl := strings.Split(s, "\",")
 	c.Algorithm = "MD5"
 	var r []string
 	for i := range sl {
@@ -124,8 +124,10 @@ func (c *challenge) parseChallenge(input string) error {
 		case "algorithm":
 			c.Algorithm = strings.Trim(r[1], qs)
 		case "qop":
-			// TODO(gavaletz) should be an array of strings?
-			c.Qop = strings.Trim(r[1], qs)
+			// currently only "auth" is used, and other QoP parameters
+			// are not implemented, so only use "auth" for now
+			// TODO handle multiple params like "auth,auth-int"
+			c.Qop = "auth"
 		default:
 			return fmt.Errorf("challenge is bad, unexpected token: %s", sl)
 		}
